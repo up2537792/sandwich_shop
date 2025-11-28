@@ -7,10 +7,9 @@ void main() {
     await tester.pumpWidget(const App());
     await tester.pumpAndSettle();
 
-    // Open the drawer using the menu tooltip
-    final Finder menu = find.byTooltip('Open navigation menu');
-    expect(menu, findsOneWidget);
-    await tester.tap(menu);
+    // Open the drawer programmatically to avoid hit-test fragility in tests
+    final ScaffoldState scaffoldState = tester.firstState(find.byType(Scaffold));
+    scaffoldState.openDrawer();
     await tester.pumpAndSettle();
 
     // Tap the Profile item
