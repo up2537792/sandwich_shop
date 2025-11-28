@@ -12,10 +12,10 @@ void main() {
     scaffoldState.openDrawer();
     await tester.pumpAndSettle();
 
-    // Tap the Profile item
-    final Finder profileTile = find.text('Profile');
-    expect(profileTile, findsWidgets); // one in drawer
-    await tester.tap(profileTile.first);
+    // Tap the Profile item by key (more reliable)
+    final Finder profileTile = find.byKey(const Key('drawer_profile'));
+    expect(profileTile, findsOneWidget);
+    await tester.tap(profileTile);
     await tester.pumpAndSettle();
 
     // Should navigate to Profile screen content (check form field exists)
