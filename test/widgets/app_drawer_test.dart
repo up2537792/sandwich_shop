@@ -18,7 +18,7 @@ void main() {
     await tester.tap(profileTile.first);
     await tester.pumpAndSettle();
 
-    // Should navigate to Profile screen content
-    expect(find.text('Profile screen - user settings go here'), findsOneWidget);
+    // Should navigate to Profile screen content (check form field exists)
+    expect(find.byKey(const Key('profile_name')), findsOneWidget);
   });
 }
