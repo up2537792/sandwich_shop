@@ -17,6 +17,7 @@ class AppDrawer extends StatelessWidget {
               child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 20)),
             ),
             ListTile(
+              key: const Key('drawer_home'),
               leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
@@ -25,6 +26,7 @@ class AppDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              key: const Key('drawer_profile'),
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
@@ -36,6 +38,7 @@ class AppDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              key: const Key('drawer_cart'),
               leading: const Icon(Icons.shopping_cart),
               title: const Text('Cart'),
               onTap: () {
@@ -46,6 +49,7 @@ class AppDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              key: const Key('drawer_about'),
               leading: const Icon(Icons.info),
               title: const Text('About'),
               onTap: () {
