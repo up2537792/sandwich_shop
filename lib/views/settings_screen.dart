@@ -22,97 +22,64 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: ListView(
               children: [
-                // Font Size Section
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                SettingCard(
+                  title: 'Font Size',
+                  children: [
+                    Row(
                       children: [
-                        const Text(
-                          'Font Size',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        const Icon(Icons.text_decrease, size: 20),
+                        Expanded(
+                          child: Slider(
+                            key: const Key('font_size_slider'),
+                            value: settings.fontSize,
+                            min: 12,
+                            max: 24,
+                            divisions: 6,
+                            label: '${settings.fontSize.toStringAsFixed(0)}',
+                            onChanged: (value) {
+                              context.read<AppSettings>().setFontSize(value);
+                            },
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            const Icon(Icons.text_decrease, size: 20),
-                            Expanded(
-                              child: Slider(
-                                key: const Key('font_size_slider'),
-                                value: settings.fontSize,
-                                min: 12,
-                                max: 24,
-                                divisions: 6,
-                                label: '${settings.fontSize.toStringAsFixed(0)}',
-                                onChanged: (value) {
-                                  context.read<AppSettings>().setFontSize(value);
-                                },
-                              ),
-                            ),
-                            const Icon(Icons.text_increase, size: 20),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Current: ${settings.fontSize.toStringAsFixed(0)}pt',
-                          key: const Key('font_size_display'),
-                          style: TextStyle(
-                            fontSize: settings.fontSize,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                        const Icon(Icons.text_increase, size: 20),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Theme Section
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Dark Theme',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Switch(
-                              key: const Key('dark_theme_switch'),
-                              value: settings.isDarkTheme,
-                              onChanged: (value) {
-                                context.read<AppSettings>().setDarkTheme(value);
-                              },
-                            ),
-                          ],
-                        ),
-                        Text(
-                          settings.isDarkTheme
-                              ? 'Dark theme enabled'
-                              : 'Light theme enabled',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Current: ${settings.fontSize.toStringAsFixed(0)}pt',
+                      key: const Key('font_size_display'),
+                      style: TextStyle(
+                        fontSize: settings.fontSize,
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SectionDivider(height: 16),
 
-                // Reset Button
+                SettingCard(
+                  title: 'Dark Theme',
+                  trailing: Switch(
+                    key: const Key('dark_theme_switch'),
+                    value: settings.isDarkTheme,
+                    onChanged: (value) {
+                      context.read<AppSettings>().setDarkTheme(value);
+                    },
+                  ),
+                  children: [
+                    Text(
+                      settings.isDarkTheme
+                          ? 'Dark theme enabled'
+                          : 'Light theme enabled',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+                const SectionDivider(height: 16),
+
                 PrimaryButton(
                   label: 'Reset to Defaults',
                   backgroundColor: Colors.red,

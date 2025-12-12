@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/views/cart_screen.dart';
+import 'package:sandwich_shop/widgets/common_widgets.dart';
 
 class AppBarWidget extends StatelessWidget {
   final String title;
@@ -43,27 +44,7 @@ class AppBarWidget extends StatelessWidget {
                         children: [
                           const Icon(Icons.shopping_cart, size: 32),
                           if (cart.items.isNotEmpty)
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                                child: Text(
-                                  '${cart.items.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
+                            CartBadge(itemCount: cart.items.length),
                         ],
                       ),
                     ),
