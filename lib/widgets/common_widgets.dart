@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// 购物车徽章小部件 - 显示购物车中的项目数
+/// Shopping cart badge widget - displays the number of items in the cart
 class CartBadge extends StatelessWidget {
   final int itemCount;
 
@@ -36,6 +37,7 @@ class CartBadge extends StatelessWidget {
 }
 
 /// 空状态小部件 - 当列表为空时显示
+/// Empty state widget - displays when list is empty
 class EmptyStateWidget extends StatelessWidget {
   final String message;
   final IconData? icon;
@@ -71,6 +73,7 @@ class EmptyStateWidget extends StatelessWidget {
 }
 
 /// 确认对话框小部件 - 用于删除或重置操作
+/// Confirmation dialog widget - for delete or reset operations
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String content;
@@ -112,7 +115,8 @@ class ConfirmDialog extends StatelessWidget {
   }
 }
 
-/// 主按钮小部件 - 标准化的提升按钮样式
+/// 主按钮小部件 - 标准化的提升按钮
+/// Primary button widget - standardized elevated button
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -168,6 +172,7 @@ class PrimaryButton extends StatelessWidget {
 }
 
 /// 信息卡片小部件 - 用于显示分组信息
+/// Info card widget - for displaying grouped information
 class InfoCard extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -203,6 +208,7 @@ class InfoCard extends StatelessWidget {
 }
 
 /// 订单项列表小部件 - 显示订单中的单个项目
+/// Order line item widget - displays individual items in an order
 class OrderLineItem extends StatelessWidget {
   final String name;
   final String subtitle;
@@ -240,6 +246,7 @@ class OrderLineItem extends StatelessWidget {
 }
 
 /// 订单卡片小部件 - 用于订单历史列表
+/// Order card widget - for order history list
 class OrderCard extends StatelessWidget {
   final String date;
   final String items;
@@ -304,6 +311,7 @@ class OrderCard extends StatelessWidget {
 }
 
 /// 设置卡片小部件 - 用于显示可调整的设置项
+/// Setting card widget - for displaying adjustable setting items
 class SettingCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -368,6 +376,7 @@ class SettingCard extends StatelessWidget {
 }
 
 /// 加载指示器小部件 - 显示加载状态
+/// Loading indicator widget - displays loading state
 class LoadingIndicator extends StatelessWidget {
   final String message;
 
@@ -392,6 +401,7 @@ class LoadingIndicator extends StatelessWidget {
 }
 
 /// 总计显示小部件 - 显示金额总计
+/// Total price widget - displays amount total
 class TotalPrice extends StatelessWidget {
   final double price;
   final TextStyle? style;
@@ -416,6 +426,7 @@ class TotalPrice extends StatelessWidget {
 }
 
 /// 分隔符 - 用于分组内容
+/// Section divider - for grouping content
 class SectionDivider extends StatelessWidget {
   final double height;
   final EdgeInsets padding;
@@ -432,7 +443,8 @@ class SectionDivider extends StatelessWidget {
   }
 }
 
-/// 使用指南 - 显示 SnackBar 消息的辅助函数
+/// SnackBar 辅助类 - 显示 SnackBar 消息的辅助函数
+/// SnackBar helper class - utility class for displaying SnackBar messages
 class SnackBarHelper {
   static void showMessage(
     BuildContext context,
@@ -465,6 +477,7 @@ class SnackBarHelper {
 }
 
 /// 显示确认对话框的辅助函数
+/// Helper function to show confirmation dialog
 Future<bool> showConfirmDialog(
   BuildContext context, {
   required String title,
