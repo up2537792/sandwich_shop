@@ -3,26 +3,63 @@ import 'package:provider/provider.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
+import 'package:sandwich_shop/models/app_settings.dart';
 import 'package:sandwich_shop/repositories/pricing_repository.dart';
 import 'package:sandwich_shop/views/cart_screen.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 import 'package:sandwich_shop/views/profile_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const App());
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late AppSettings _appSettings;
+
+  @override
+  void initState() {
+    super.initState();
+    _appSettings = AppSettings();
+    _initSettings();
+  }
+
+  Future<void> _initSettings() async {
+    await _appSettings.init();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (BuildContext context) => Cart(),
-      child: const MaterialApp(
-        title: 'Sandwich Shop App',
-        debugShowCheckedModeBanner: false,
-        home: OrderScreen(maxQuantity: 5),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Cart()),
+        ChangeNotifierProvider(create: (context) => _appSettings),
+      ],
+      child: Consumer<AppSettings>(
+        builder: (context, settings, child) {
+          return MaterialApp(
+            title: 'Sandwich Shop App',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              useMaterial3: true,
+              brightness: Brightness.light,
+            ),
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              brightness: Brightness.dark,
+            ),
+            themeMode: settings.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+            home: const OrderScreen(maxQuantity: 5),
+          );
+        },
       ),
     );
   }
