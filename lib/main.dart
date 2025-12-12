@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
@@ -16,9 +17,13 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sandwich Shop App',
-      home: const OrderScreen(maxQuantity: 5),
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => Cart(),
+      child: const MaterialApp(
+        title: 'Sandwich Shop App',
+        debugShowCheckedModeBanner: false,
+        home: OrderScreen(maxQuantity: 5),
+      ),
     );
   }
 }
@@ -33,7 +38,6 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  final Cart _cart = Cart();
   final PricingRepository _pricingRepository = PricingRepository(
     footlongPrice: 11,
     sixInchPrice: 7,
@@ -67,9 +71,8 @@ class _OrderScreenState extends State<OrderScreen> {
         breadType: _selectedBreadType,
       );
 
-      setState(() {
-        _cart.add(sandwich, quantity: _quantity);
-      });
+      final Cart cart = Provider.of<Cart>(context, listen: false);
+      cart.add(sandwich, quantity: _quantity);
 
       String sizeText;
       if (_isFootlong) {
@@ -178,49 +181,50 @@ class _OrderScreenState extends State<OrderScreen> {
           style: heading1,
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CartScreen(
-                      cart: _cart,
-                      pricingRepository: _pricingRepository,
-                    ),
-                  ),
-                );
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Icon(Icons.shopping_cart, size: 32),
-                  if (_cart.items.isNotEmpty)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                        child: Text(
-                          '${_cart.items.length}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+          Consumer<Cart>(
+            builder: (context, cart, child) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartScreen(),
                       ),
-                    ),
-                ],
-              ),
-            ),
+                    );
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const Icon(Icons.shopping_cart, size: 32),
+                      if (cart.items.isNotEmpty)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                            child: Text(
+                              '${cart.items.length}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -309,15 +313,23 @@ class _OrderScreenState extends State<OrderScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Items: ${_cart.items.length}',
-              key: const Key('cart_item_count'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Consumer<Cart>(
+              builder: (context, cart, child) {
+                return Text(
+                  'Items: ${cart.items.length}',
+                  key: const Key('cart_item_count'),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                );
+              },
             ),
-            Text(
-              'Total: £${_cart.totalPrice(_pricingRepository).toStringAsFixed(2)}',
-              key: const Key('cart_total_price'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+            Consumer<Cart>(
+              builder: (context, cart, child) {
+                return Text(
+                  'Total: £${cart.totalPrice(_pricingRepository).toStringAsFixed(2)}',
+                  key: const Key('cart_total_price'),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                );
+              },
             ),
             TextButton(
               key: const Key('open_profile_button'),

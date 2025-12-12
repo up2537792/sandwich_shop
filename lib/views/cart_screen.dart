@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/repositories/pricing_repository.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 
 class CartScreen extends StatefulWidget {
-  final Cart cart;
-  final PricingRepository pricingRepository;
-
-  const CartScreen({super.key, required this.cart, required this.pricingRepository});
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -15,11 +13,19 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   late final TextEditingController _notesController;
+  final PricingRepository _pricingRepository = PricingRepository(
+    footlongPrice: 11,
+    sixInchPrice: 7,
+  );
 
   @override
   void initState() {
     super.initState();
-    _notesController = TextEditingController(text: widget.cart.notes ?? '');
+    final Cart cart = Provider.of<Cart>(context, listen: false);
+    _notesController = TextEditingController(text: cart.notes ?? '');
+    _notesController.addListener(() {
+      cart.setNotes(_notesController.text);
+    });
   }
 
   @override
@@ -28,10 +34,10 @@ class _CartScreenState extends State<CartScreen> {
     super.dispose();
   }
 
-  Widget _buildLineItem(int index) {
-    final item = widget.cart.items[index];
+  Widget _buildLineItem(int index, Cart cart) {
+    final item = cart.items[index];
     final sandwich = item.sandwich;
-    final lineTotal = widget.pricingRepository.totalPrice(quantity: item.quantity, isFootlong: sandwich.isFootlong);
+    final lineTotal = _pricingRepository.totalPrice(quantity: item.quantity, isFootlong: sandwich.isFootlong);
     final sizeText = sandwich.isFootlong ? 'Footlong' : '6-inch';
     return ListTile(
       title: Text('${sandwich.name} ($sizeText)', style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -54,35 +60,39 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         title: const Text('Your Cart'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: widget.cart.items.isEmpty
-                  ? const Center(child: Text('Cart is empty'))
-                  : ListView.builder(
-                      itemCount: widget.cart.items.length,
-                      itemBuilder: (context, index) => _buildLineItem(index),
-                    ),
+      body: Consumer<Cart>(
+        builder: (context, cart, child) {
+          return Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: cart.items.isEmpty
+                      ? const Center(child: Text('Cart is empty'))
+                      : ListView.builder(
+                          itemCount: cart.items.length,
+                          itemBuilder: (context, index) => _buildLineItem(index, cart),
+                        ),
+                ),
+                const SizedBox(height: 12),
+                Text('Total: £${cart.totalPrice(_pricingRepository)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                TextField(
+                  key: const Key('cart_notes'),
+                  controller: _notesController,
+                  decoration: const InputDecoration(labelText: 'Order notes (for entire order)'),
+                  onChanged: (v) => cart.setNotes(v),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Done'),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text('Total: £${widget.cart.totalPrice(widget.pricingRepository)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextField(
-              key: const Key('cart_notes'),
-              controller: _notesController,
-              decoration: const InputDecoration(labelText: 'Order notes (for entire order)'),
-              onChanged: (v) => widget.cart.setNotes(v),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Done'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
