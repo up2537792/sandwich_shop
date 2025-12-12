@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sandwich_shop/models/app_settings.dart';
+import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/views/settings_screen.dart';
 
 void main() {
@@ -15,8 +16,11 @@ void main() {
     await settings.init();
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -31,8 +35,11 @@ void main() {
     await settings.init();
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -46,8 +53,11 @@ void main() {
     await settings.init();
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -65,8 +75,11 @@ void main() {
     await settings.init();
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -87,8 +100,11 @@ void main() {
     await settings.init();
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -107,8 +123,11 @@ void main() {
     await settings.setDarkTheme(true);
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (context) => settings,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => settings),
+          ChangeNotifierProvider(create: (context) => Cart()),
+        ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );

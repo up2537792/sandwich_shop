@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/repositories/pricing_repository.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
+import 'package:sandwich_shop/widgets/app_bar_widget.dart';
+import 'package:sandwich_shop/providers/order_history_provider.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -57,8 +59,9 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(
-        title: const Text('Your Cart'),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: AppBarWidget(title: 'Your Cart', showCartIcon: false),
       ),
       body: Consumer<Cart>(
         builder: (context, cart, child) {
@@ -86,8 +89,39 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
+                  onPressed: cart.items.isEmpty
+                      ? null
+                      : () async {
+                          final itemList = cart.items
+                              .map((item) =>
+                                  '${item.quantity}x ${item.sandwich.name}')
+                              .toList();
+                          final totalPrice =
+                              (cart.totalPrice(_pricingRepository) as num).toDouble();
+                          await context.read<OrderHistoryProvider>().saveOrder(
+                                itemList,
+                                totalPrice,
+                                cart.notes ?? '',
+                              );
+                          if (mounted) {
+                            cart.clear();
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Order saved to history'),
+                              ),
+                            );
+                          }
+                        },
+                  child: const Text('Place Order'),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Done'),
+                  child: const Text('Cancel'),
                 ),
               ],
             ),
