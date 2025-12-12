@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 import 'package:sandwich_shop/widgets/app_bar_widget.dart';
+import 'package:sandwich_shop/widgets/common_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,7 +28,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _save() {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile saved')));
+      SnackBarHelper.showMessage(
+        context,
+        'Profile saved',
+      );
     }
   }
 
@@ -84,10 +88,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              PrimaryButton(
+                label: 'Save',
                 key: const Key('profile_save'),
                 onPressed: _save,
-                child: const Text('Save'),
               ),
             ],
           ),

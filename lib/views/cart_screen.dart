@@ -5,6 +5,7 @@ import 'package:sandwich_shop/repositories/pricing_repository.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 import 'package:sandwich_shop/widgets/app_bar_widget.dart';
 import 'package:sandwich_shop/providers/order_history_provider.dart';
+import 'package:sandwich_shop/widgets/common_widgets.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -40,18 +41,11 @@ class _CartScreenState extends State<CartScreen> {
     final item = cart.items[index];
     final sandwich = item.sandwich;
     final lineTotal = _pricingRepository.totalPrice(quantity: item.quantity, isFootlong: sandwich.isFootlong);
-    final sizeText = sandwich.isFootlong ? 'Footlong' : '6-inch';
-    return ListTile(
-      title: Text('${sandwich.name} ($sizeText)', style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text('Bread: ${sandwich.breadType.name}'),
-      trailing: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text('Qty: ${item.quantity}'),
-          Text('£$lineTotal'),
-        ],
-      ),
+    return OrderLineItem(
+      name: sandwich.name,
+      subtitle: 'Bread: ${sandwich.breadType.name}',
+      quantity: 'Qty: ${item.quantity}',
+      price: '£$lineTotal',
     );
   }
 
@@ -79,7 +73,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                 ),
                 const SizedBox(height: 12),
-                Text('Total: £${cart.totalPrice(_pricingRepository)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                TotalPrice(price: (cart.totalPrice(_pricingRepository) as num).toDouble()),
                 const SizedBox(height: 8),
                 TextField(
                   key: const Key('cart_notes'),
@@ -88,7 +82,8 @@ class _CartScreenState extends State<CartScreen> {
                   onChanged: (v) => cart.setNotes(v),
                 ),
                 const SizedBox(height: 12),
-                ElevatedButton(
+                PrimaryButton(
+                  label: 'Place Order',
                   onPressed: cart.items.isEmpty
                       ? null
                       : () async {
@@ -106,22 +101,18 @@ class _CartScreenState extends State<CartScreen> {
                           if (mounted) {
                             cart.clear();
                             Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Order saved to history'),
-                              ),
+                            SnackBarHelper.showMessage(
+                              context,
+                              'Order saved to history',
                             );
                           }
                         },
-                  child: const Text('Place Order'),
                 ),
                 const SizedBox(height: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                  ),
+                PrimaryButton(
+                  label: 'Cancel',
+                  backgroundColor: Colors.grey,
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
                 ),
               ],
             ),

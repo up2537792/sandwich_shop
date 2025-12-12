@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sandwich_shop/models/app_settings.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 import 'package:sandwich_shop/widgets/app_bar_widget.dart';
+import 'package:sandwich_shop/widgets/common_widgets.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -112,40 +113,26 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Reset Button
-                ElevatedButton(
+                PrimaryButton(
+                  label: 'Reset to Defaults',
+                  backgroundColor: Colors.red,
                   key: const Key('reset_settings_button'),
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Reset Settings?'),
-                        content: const Text('This will reset all settings to defaults.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.read<AppSettings>().resetToDefaults();
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Settings reset to defaults'),
-                                ),
-                              );
-                            },
-                            child: const Text('Reset'),
-                          ),
-                        ],
-                      ),
-                    );
+                    showConfirmDialog(
+                      context,
+                      title: 'Reset Settings?',
+                      message: 'This will reset all settings to defaults.',
+                      confirmButtonText: 'Reset',
+                    ).then((confirmed) {
+                      if (confirmed) {
+                        context.read<AppSettings>().resetToDefaults();
+                        SnackBarHelper.showMessage(
+                          context,
+                          'Settings reset to defaults',
+                        );
+                      }
+                    });
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('Reset to Defaults'),
                 ),
               ],
             ),

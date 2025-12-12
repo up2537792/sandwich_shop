@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sandwich_shop/widgets/app_drawer.dart';
 import 'package:sandwich_shop/widgets/app_bar_widget.dart';
 import 'package:sandwich_shop/providers/order_history_provider.dart';
+import 'package:sandwich_shop/widgets/common_widgets.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -31,12 +32,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       body: Consumer<OrderHistoryProvider>(
         builder: (context, orderHistory, child) {
           if (orderHistory.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator();
           }
 
           if (orderHistory.orders.isEmpty) {
-            return const Center(
-              child: Text('No orders yet. Start shopping!'),
+            return const EmptyStateWidget(
+              message: 'No orders yet. Start shopping!',
+              icon: Icons.shopping_bag_outlined,
             );
           }
 
@@ -44,65 +46,22 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             itemCount: orderHistory.orders.length,
             itemBuilder: (context, index) {
               final order = orderHistory.orders[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: ListTile(
-                  title: Text(
-                    order.date,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text('Items: ${order.items}'),
-                      if (order.notes.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text('Notes: ${order.notes}', style: const TextStyle(fontStyle: FontStyle.italic)),
-                      ],
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '£${order.totalPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.green,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Delete Order?'),
-                              content: const Text('This action cannot be undone.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    context.read<OrderHistoryProvider>().deleteOrder(order.id!);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  isThreeLine: order.notes.isNotEmpty,
-                ),
+              return OrderCard(
+                date: order.date,
+                items: order.items,
+                notes: order.notes,
+                price: '£${order.totalPrice.toStringAsFixed(2)}',
+                onDelete: () {
+                  showConfirmDialog(
+                    context,
+                    title: 'Delete Order?',
+                    message: 'This action cannot be undone.',
+                  ).then((confirmed) {
+                    if (confirmed) {
+                      context.read<OrderHistoryProvider>().deleteOrder(order.id!);
+                    }
+                  });
+                },
               );
             },
           );
@@ -115,26 +74,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           }
           return FloatingActionButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Clear All Orders?'),
-                  content: const Text('This will delete all order history. This action cannot be undone.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        context.read<OrderHistoryProvider>().clearAllOrders();
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Clear All', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              );
+              showConfirmDialog(
+                context,
+                title: 'Clear All Orders?',
+                message: 'This will delete all order history. This action cannot be undone.',
+                confirmButtonText: 'Clear All',
+              ).then((confirmed) {
+                if (confirmed) {
+                  context.read<OrderHistoryProvider>().clearAllOrders();
+                }
+              });
             },
             backgroundColor: Colors.red,
             tooltip: 'Clear all orders',
